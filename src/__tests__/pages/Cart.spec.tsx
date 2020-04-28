@@ -5,6 +5,20 @@ import React from 'react';
 import { mocked } from 'ts-jest/utils';
 import { render, fireEvent, act } from '@testing-library/react-native';
 
+import Cart from '../../pages/Cart';
+import { useCart } from '../../hooks/cart';
+
+jest.mock('@react-navigation/native', () => {
+  // Require the original module to not be mocked...
+  const originalModule = jest.requireActual('@react-navigation/native');
+
+  return {
+    __esModule: true, // Use it when dealing with esModules
+    ...originalModule,
+    useNavigation: jest.fn(),
+  };
+});
+
 jest.mock('../../hooks/cart.tsx', () => ({
   __esModule: true,
   useCart: jest.fn().mockReturnValue({
@@ -17,9 +31,6 @@ jest.mock('../../utils/formatValue.ts', () => ({
   __esModule: true,
   default: jest.fn().mockImplementation(value => value),
 }));
-
-import Cart from '../../pages/Cart';
-import { useCart } from '../../hooks/cart';
 
 const useCartMocked = mocked(useCart);
 
