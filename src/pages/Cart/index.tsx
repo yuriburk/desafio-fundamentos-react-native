@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import FeatherIcon from 'react-native-vector-icons/Feather';
-
 import { View } from 'react-native';
 
+import { ProductModelComplete } from '../../interfaces/Products';
+import { useCart } from '../../hooks/cart';
+import formatValue from '../../utils/formatValue';
 import {
   Container,
   ProductContainer,
@@ -18,21 +20,10 @@ import {
   ProductQuantity,
   ActionContainer,
   ActionButton,
+  TotalProductsContainer,
+  TotalProductsText,
+  SubtotalValue,
 } from './styles';
-
-import FloatingCart from '../../components/FloatingCart';
-
-import { useCart } from '../../hooks/cart';
-
-import formatValue from '../../utils/formatValue';
-
-interface Product {
-  id: string;
-  title: string;
-  image_url: string;
-  price: number;
-  quantity: number;
-}
 
 const Cart: React.FC = () => {
   const { increment, decrement, products } = useCart();
@@ -45,6 +36,23 @@ const Cart: React.FC = () => {
     decrement(id);
   }
 
+  const cartTotal = useMemo(() => {
+    return formatValue(
+      products.reduce(
+        (accumulator, currentProd) =>
+          accumulator + currentProd.quantity * currentProd.price,
+        0,
+      ),
+    );
+  }, [products]);
+
+  const totalItensInCart = useMemo(() => {
+    return products.reduce(
+      (accumulator, currentProd) => accumulator + currentProd.quantity,
+      0,
+    );
+  }, [products]);
+
   return (
     <Container>
       <ProductContainer>
@@ -55,7 +63,7 @@ const Cart: React.FC = () => {
           ListFooterComponentStyle={{
             height: 80,
           }}
-          renderItem={({ item }: { item: Product }) => (
+          renderItem={({ item }: { item: ProductModelComplete }) => (
             <Product>
               <ProductImage source={{ uri: item.image_url }} />
               <ProductTitleContainer>
@@ -92,7 +100,11 @@ const Cart: React.FC = () => {
           )}
         />
       </ProductContainer>
-      <FloatingCart />
+      <TotalProductsContainer>
+        <FeatherIcon name="shopping-cart" color="#fff" size={24} />
+        <TotalProductsText>{`${totalItensInCart} itens`}</TotalProductsText>
+        <SubtotalValue>{cartTotal}</SubtotalValue>
+      </TotalProductsContainer>
     </Container>
   );
 };

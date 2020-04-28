@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 
 import { useNavigation } from '@react-navigation/native';
 
@@ -24,7 +24,7 @@ const FloatingCart: React.FC = () => {
     return formatValue(
       products.reduce(
         (accumulator, currentProd) =>
-          accumulator + currentProd.price * currentProd.quantity,
+          accumulator + currentProd.quantity * currentProd.price,
         0,
       ),
     );
